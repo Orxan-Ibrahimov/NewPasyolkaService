@@ -15,7 +15,7 @@ let users = [];
 bot.onText(/\/start/, (msg) => {
   bot.sendMessage(
     msg.chat.id,
-    "Futbol botu aktivdir. '+' yazın əlavə etmək, '-' yazın silmək üçün."
+    "Pasyolka FK: \n Həftə sonu olacaq futbol oyununun heyət seçimi başlamışdır.Oyuna gəlmək istəyənlər '+' yazsın, Siyahıda olub sonradan işi çıxanlar '-'."
   );
 });
 
@@ -26,6 +26,16 @@ bot.onText(/\/siyahi/, (msg) => {
     bot.sendMessage(msg.chat.id, msgText);
   } else {
     bot.sendMessage(msg.chat.id, "Siyahı boşdur");
+  }
+});
+
+// /completed komandası
+bot.onText(/\/completed/, (msg) => {
+  if (users.length > 0) {
+    const msgText = users.map((u, i) => `${i + 1}. ${u} Siyahı tamamlandı. Xoş oyunlar :)`).join('\n');
+    bot.sendMessage(msg.chat.id, msgText);
+  } else {
+    bot.sendMessage(msg.chat.id, "Heç bir istifadəçi qeyd olunmayıb");
   }
 });
 
