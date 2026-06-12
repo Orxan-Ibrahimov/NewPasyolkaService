@@ -1,24 +1,23 @@
 // bot.js
-
 const TelegramBot = require('node-telegram-bot-api');
 require('dotenv').config();
 
-// Tokeni oxuyuruq
+// read token
 const TOKEN = process.env.TOKEN;
 
-// Botu polling rejimində işə salırıq
+// running bot
 const bot = new TelegramBot(TOKEN, { polling: true });
 
-// İstifadəçilərin saxlanacağı siyahı
+// users list
 let users = [];
 
-// Oyun aktivdir?
+// new game started ?
 let gameStarted = false;
 
-// /start komandası
+// /start command
 bot.onText(/\/start/, (msg) => {
     gameStarted = true;
-    users = []; // Yeni oyun üçün siyahını sıfırla
+    users = [];
 
     bot.sendMessage(
         msg.chat.id,
@@ -26,8 +25,8 @@ bot.onText(/\/start/, (msg) => {
     );
 });
 
-// /siyahi komandası
-bot.onText(/\/siyahi/, (msg) => {
+// /list command
+bot.onText(/\/list/, (msg) => {
     if (!gameStarted) {
         return bot.sendMessage(
             msg.chat.id,
@@ -46,7 +45,7 @@ bot.onText(/\/siyahi/, (msg) => {
     bot.sendMessage(msg.chat.id, msgText);
 });
 
-// /completed komandası
+// /completed command
 bot.onText(/\/completed/, (msg) => {
     if (!gameStarted) {
         return bot.sendMessage(
@@ -70,16 +69,16 @@ bot.onText(/\/completed/, (msg) => {
 
     bot.sendMessage(msg.chat.id, msgText);
 
-    // Oyunu bağla və siyahını təmizlə
+    // close current game and initialize list
     gameStarted = false;
     users = [];
 });
 
-// İstifadəçi mesajları
+// user messages
 bot.on('message', (msg) => {
     const text = (msg.text || '').trim();
 
-    // Komandaları keç
+    // skip commands
     if (text.startsWith('/')) {
         return;
     }
@@ -87,7 +86,7 @@ bot.on('message', (msg) => {
     const name = msg.from.first_name;
     const userId = msg.from.id;
 
-    // Oyun aktiv deyilsə + və - işləməsin
+    // is game started ?
     if (!gameStarted) {
         if (text === '+' || text === '-') {
             return bot.sendMessage(
@@ -99,7 +98,7 @@ bot.on('message', (msg) => {
         return;
     }
 
-    // Qeydiyyat
+    // Register
     if (text === '+') {
         const exists = users.find(u => u.id === userId);
 
@@ -115,13 +114,12 @@ bot.on('message', (msg) => {
             name
         });
 
-        return bot.sendMessage(
-            msg.chat.id,
-            `${name} qeyd olundu ✔`
-        );
+        let msgText = `${name} qeyd olundu ✔ \n \n `;
+        msgText += users.map((u, i) => `${i + 1}. ${u.name}`).join('\n');
+        return bot.sendMessage(msg.chat.id, msgText);
     }
 
-    // Siyahıdan çıxma
+    // leave the list
     if (text === '-') {
         const exists = users.find(u => u.id === userId);
 
@@ -134,11 +132,10 @@ bot.on('message', (msg) => {
 
         users = users.filter(u => u.id !== userId);
 
-        return bot.sendMessage(
-            msg.chat.id,
-            `${name} silindi ❌`
-        );
+        let msgText = `${name} silindi ❌ \n \n `;
+        msgText += users.map((u, i) => `${i + 1}. ${u.name}`).join('\n');
+        return bot.sendMessage(msg.chat.id, msgText);
     }
 });
 
-console.log('Bot işə düşdü!');
+console.log('Bot started!');
