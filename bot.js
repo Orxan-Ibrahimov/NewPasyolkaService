@@ -1,18 +1,29 @@
+// bot.js
+const TelegramBot = require('node-telegram-bot-api');
+require('dotenv').config();
+
+// Tokeni oxuyuruq
+const TOKEN = process.env.TOKEN;
+
+// Botu polling rejimində işə salırıq
+const bot = new TelegramBot(TOKEN, { polling: true });
+
+// İstifadəçilərin saxlanacağı siyahı (RAM-dadır, restartda silinir)
+let users = [];
+
 // Oyun aktivdir?
 let gameStarted = false;
 
-// /start
+// /start komandası
 bot.onText(/\/start/, (msg) => {
-    gameStarted = true;
-    users = []; // istəsən yeni oyunda siyahını sıfırla
-
-    bot.sendMessage(
-        msg.chat.id,
-        "Pasyolka FK: \nHəftə sonu olacaq futbol oyununun heyət seçimi başlamışdır.\nOyuna gəlmək istəyənlər '+' yazsın, siyahıda olub sonradan işi çıxanlar '-' yazsın."
-    );
+  bot.sendMessage(
+    msg.chat.id,
+    "Pasyolka FK: \nHəftə sonu olacaq futbol oyununun heyət seçimi başlamışdır.\nOyuna gəlmək istəyənlər '+' yazsın, siyahıda olub sonradan işi çıxanlar '-' yazsın."
+  );
 });
 
-// /siyahi
+
+// /siyahi komandası
 bot.onText(/\/siyahi/, (msg) => {
     if (!gameStarted) {
         return bot.sendMessage(
@@ -29,7 +40,7 @@ bot.onText(/\/siyahi/, (msg) => {
     }
 });
 
-// /completed
+// /completed komandası
 bot.onText(/\/completed/, (msg) => {
     if (!gameStarted) {
         return bot.sendMessage(
