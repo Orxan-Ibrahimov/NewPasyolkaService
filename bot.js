@@ -16,10 +16,11 @@ let gameStarted = false;
 
 // /start komandası
 bot.onText(/\/start/, (msg) => {
-  bot.sendMessage(
-    msg.chat.id,
-    "Pasyolka FK: \nHəftə sonu olacaq futbol oyununun heyət seçimi başlamışdır.\nOyuna gəlmək istəyənlər '+' yazsın, siyahıda olub sonradan işi çıxanlar '-' yazsın."
-  );
+    gameStarted = true;
+    bot.sendMessage(
+        msg.chat.id,
+        "Pasyolka FK: \nHəftə sonu olacaq futbol oyununun heyət seçimi başlamışdır.\nOyuna gəlmək istəyənlər '+' yazsın, siyahıda olub sonradan işi çıxanlar '-' yazsın."
+    );
 });
 
 
